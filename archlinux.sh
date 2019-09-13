@@ -91,11 +91,22 @@ function copy_chros_files () {
   echo alarm > ${MY_CHROOT_DIR}/etc/hostname
   echo -e "\n127.0.1.1\tlocalhost.localdomain\tlocalhost\talarm" >> ${MY_CHROOT_DIR}/etc/hosts
 
-  KERN_VER=`uname -r`
-  mkdir -p ${MY_CHROOT_DIR}/lib/modules/$KERN_VER/
-  cp -ar /lib/modules/$KERN_VER/* ${MY_CHROOT_DIR}/lib/modules/$KERN_VER/
+#TODO: mainline should have all the modules
+#KERN_VER=`uname -r`
+#mkdir -p /tmp/arfs/lib/modules/$KERN_VER/
+#cp -ar /lib/modules/$KERN_VER/* /tmp/arfs/lib/modules/$KERN_VER/
+
+
   mkdir -p ${MY_CHROOT_DIR}/lib/firmware/
   cp -ar /lib/firmware/* ${MY_CHROOT_DIR}/lib/firmware/
+cat > /tmp/arfs/install-kernel.sh <<EOF
+pacman -Syy --needed --noconfirm linux-armv7-rc-chromebook
+EOF
+
+chmod a+x /tmp/arfs/install-kernel.sh
+chroot /tmp/arfs /bin/bash -c /install-kernel.sh
+rm /tmp/arfs/install-kernel.sh
+
 
   # remove tegra_lp0_resume firmware since it is owned by latest
   # linux-nyan kernel package
